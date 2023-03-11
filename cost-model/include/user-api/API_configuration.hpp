@@ -84,7 +84,7 @@ namespace maestro {
           std::shared_ptr<std::vector<bool>> noc_multcast,
           int num_pes,
           int simd_width,
-          int top_noc_bw,
+          int top_noc_bw,     //下面初始化的地方没有赋值？
           int l1_sram_byte_size,
           int l2_sram_byte_size,
           int offchip_bw) :

@@ -34,8 +34,8 @@ namespace maestro{
     enum class LayerType {CONV, DSCONV, FC, POOL, TRCONV, NGCONV, LSTM, GEMM, NumLayerTypes};
 
     namespace DFA {
-
-      class LayerDimension {
+      
+      class LayerDimension {        //定义某一个维度
         protected:
           std::string name_;
           int size_;

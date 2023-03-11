@@ -33,7 +33,7 @@ namespace maestro {
 
 	void InitializeBaseObjects(int print_lv = 0) {
 		error_handler = std::make_shared<TL::ErrorHandler>();
-		message_printer = std::make_shared<TL::MessagePrinter>(print_lv);
+		message_printer = std::make_shared<TL::MessagePrinter>(print_lv);   //类型为TL::MessagePrinter，初始化为print_lv
 	}
 
 	void SetPrintOutLevel(int new_lv) {

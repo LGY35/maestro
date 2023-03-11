@@ -19,7 +19,6 @@ SOFTWARE.
 Author : Hyoukjun Kwon (hyoukjun@gatech.edu)
 *******************************************************************************/
 
-
 #ifndef MAESTRO_DFA_DIRECTIVE_TABLE_HPP_
 #define MAESTRO_DFA_DIRECTIVE_TABLE_HPP_
 
@@ -32,171 +31,208 @@ Author : Hyoukjun Kwon (hyoukjun@gatech.edu)
 #include "DFA_directives.hpp"
 #include "DFSL_syntax_tokens.hpp"
 
-namespace maestro {
-	namespace DFA {
+namespace maestro
+{
+	namespace DFA
+	{
 
-		class DirectiveTable {
+		class DirectiveTable
+		{
+		public:
+			class iterator
+			{
+			private:
+				std::shared_ptr<std::vector<std::shared_ptr<directive::Directive>>> iter_directives_;
+
 			public:
+				int curr_idx_;
 
-    		class iterator {
-    			private:
-    				std::shared_ptr<std::vector<std::shared_ptr<directive::Directive>>> iter_directives_;
-    			public:
+				iterator(std::shared_ptr<std::vector<std::shared_ptr<directive::Directive>>> ptr, int idx) : iter_directives_(ptr), curr_idx_(idx)
+				{
+				}
 
-    				int curr_idx_;
-
-						iterator(std::shared_ptr<std::vector<std::shared_ptr<directive::Directive>>> ptr, int idx) :
-							iter_directives_(ptr),
-							curr_idx_(idx) {
-
-						}
-
-						iterator operator++() {
-							this->curr_idx_++;
-							iterator iter = *this;
-							return iter;
-						}
-
-						std::shared_ptr<directive::Directive>& operator*() {
-							return iter_directives_->at(curr_idx_);
-						}
-
-						bool operator==(const iterator& rhs) {
-							return (this->curr_idx_ == rhs.curr_idx_);
-						}
-
-						bool operator!=(const iterator& rhs) {
-							return (this->curr_idx_ != rhs.curr_idx_);
-						}
-
-    		}; // End of class iterator for class Directive_table
-
-				iterator begin() {
-					iterator iter(directives_, 0);
+				iterator operator++()
+				{
+					this->curr_idx_++;
+					iterator iter = *this;
 					return iter;
 				}
 
-				iterator end() {
-					iterator iter(directives_, directives_->size());
-					return iter;
+				std::shared_ptr<directive::Directive> &operator*()
+				{
+					return iter_directives_->at(curr_idx_);
 				}
 
-				DirectiveTable() {
-					directives_ = std::make_shared<std::vector<std::shared_ptr<directive::Directive>>>();
+				bool operator==(const iterator &rhs)
+				{
+					return (this->curr_idx_ == rhs.curr_idx_);
 				}
 
-				std::shared_ptr<directive::Directive> at (int idx) {
-          if(idx < directives_->size()) {
-            return directives_->at(idx);
-          }
-          else {
-            return nullptr;
-          }
+				bool operator!=(const iterator &rhs)
+				{
+					return (this->curr_idx_ != rhs.curr_idx_);
 				}
 
-				std::shared_ptr<directive::Directive> operator[] (int idx) {
-				  return this->at(idx);
+			}; // End of class iterator for class Directive_table
+
+			iterator begin()
+			{
+				iterator iter(directives_, 0);
+				return iter;
+			}
+
+			iterator end()
+			{
+				iterator iter(directives_, directives_->size());
+				return iter;
+			}
+
+			DirectiveTable()
+			{
+				directives_ = std::make_shared<std::vector<std::shared_ptr<directive::Directive>>>();
+			}
+
+			std::shared_ptr<directive::Directive> at(int idx)
+			{
+				if (idx < directives_->size())
+				{
+					return directives_->at(idx);
+				}
+				else
+				{
+					return nullptr;
+				}
+			}
+
+			std::shared_ptr<directive::Directive> operator[](int idx)
+			{
+				return this->at(idx);
+			}
+
+			void ConvertToInputCentric()
+			{
+
+				int size_S, size_R = 0;
+
+				// 首先取出权重的大小
+				for (auto &directive : *directives_)
+				{
+					if (directive->GetVariable() == DFSL::layer_dim_weight_width_)
+					{
+						size_S = directive->GetSize();
+					}
+					else if (directive->GetVariable() == DFSL::layer_dim_weight_height_)
+					{
+						size_R = directive->GetSize();
+					}
+				}
+				// 在找到输出的大小之后，利用权重的大小，转换为输入的size
+				for (auto &directive : *directives_)
+				{
+					if (directive->GetVariable() == DFSL::layer_dim_output_width_)
+					{
+						directive->SetVariable(DFSL::layer_dim_input_width_);
+						directive->SetSize(directive->GetSize() + size_S - 1);
+					}
+					else if (directive->GetVariable() == DFSL::layer_dim_output_height_)
+					{
+						directive->SetVariable(DFSL::layer_dim_input_height_);
+						directive->SetSize(directive->GetSize() + size_R - 1);
+					}
+				}
+			}
+
+			std::shared_ptr<directive::Directive> FindDirective(std::string var)
+			{
+				std::shared_ptr<directive::Directive> ret = nullptr;
+
+				for (auto directive : *directives_)
+				{
+					if (directive->GetVariable() == var)
+					{
+						return directive;
+					}
 				}
 
-				void ConvertToInputCentric() {
+				return ret;
+			}
 
-				  int size_S, size_R = 0;
-
-				  for(auto& directive : *directives_)  {
-            if(directive->GetVariable() == DFSL::layer_dim_weight_width_) {
-              size_S = directive->GetSize();
-            }
-            else if(directive->GetVariable() == DFSL::layer_dim_weight_height_) {
-              size_R = directive->GetSize();
-            }
-				  }
-
-          for(auto& directive : *directives_)  {
-            if(directive->GetVariable() == DFSL::layer_dim_output_width_) {
-              directive->SetVariable(DFSL::layer_dim_input_width_);
-              directive->SetSize(directive->GetSize() + size_S -1);
-            }
-            else if(directive->GetVariable() == DFSL::layer_dim_output_height_) {
-              directive->SetVariable(DFSL::layer_dim_input_height_);
-              directive->SetSize(directive->GetSize() + size_R -1);
-            }
-          }
+			int GetDirectiveIdx(std::string var)
+			{
+				int idx = 0;
+				for (auto directive : *directives_)
+				{
+					if (directive->GetVariable() == var)
+					{
+						return idx;
+					}
+					idx++;
 				}
+				return idx;
+			}
 
-				std::shared_ptr<directive::Directive> FindDirective (std::string var) {
-				  std::shared_ptr<directive::Directive> ret = nullptr;
-
-				  for(auto directive : *directives_) {
-				    if(directive->GetVariable() == var) {
-				      return directive;
-				    }
-				  }
-
-				  return ret;
+			int GetTemporalMapIdx(std::string var)
+			{
+				int idx = 0;
+				for (auto directive : *directives_)
+				{
+					if (directive->GetVariable() == var)
+					{
+						return idx;
+					}
+					if (directive->GetClass() == DFA::directive::DirectiveClass::TemporalMap)
+					{
+						idx++;
+					}
 				}
+				return idx;
+			}
 
-				int GetDirectiveIdx (std::string var) {
-				  int idx = 0;
-          for(auto directive : *directives_) {
-            if(directive->GetVariable() == var) {
-              return idx;
-            }
-            idx++;
-          }
-				  return idx;
-				}
+			// 在最开始添加指令
+			void AddDirectiveFront(std::shared_ptr<directive::Directive> new_directive)
+			{
+				directives_->insert(directives_->begin(), new_directive);
+			}
 
-        int GetTemporalMapIdx (std::string var) {
-          int idx = 0;
-          for(auto directive : *directives_) {
-            if(directive->GetVariable() == var) {
-              return idx;
-            }
-            if(directive->GetClass() == DFA::directive::DirectiveClass::TemporalMap) {
-              idx++;
-            }
-          }
-          return idx;
-        }
+			void AddDirective(std::shared_ptr<directive::Directive> new_directive)
+			{
+				directives_->push_back(new_directive);
+			}
 
-        void AddDirectiveFront(std::shared_ptr<directive::Directive> new_directive) {
-          directives_->insert(directives_->begin(), new_directive);
-        }
-
-
-				void AddDirective(std::shared_ptr<directive::Directive> new_directive) {
-					directives_->push_back(new_directive);
-				}
-
-			void DeleteDirectives(){
+			void DeleteDirectives()
+			{
 				directives_->erase(directives_->begin(),
 								   directives_->begin() + directives_->size());
 			}
 
-			void ReverseDirectives() {
+			void ReverseDirectives()
+			{
 				std::reverse(std::begin(*directives_), std::end(*directives_));
 			}
 
-				int size() {
-				  return directives_->size();
+			int size()
+			{
+				return directives_->size();
+			}
+
+			std::string ToString()
+			{
+				std::string ret = "";
+				for (auto &it : *directives_)
+				{
+					ret = ret + it->ToString();
+					ret = ret + "\n";
 				}
 
-				std::string ToString() {
-				  std::string ret = "";
-				  for(auto& it : *directives_) {
-				    ret = ret + it->ToString();
-				    ret = ret + "\n";
-				  }
+				return ret;
+			}
 
-				  return ret;
-				}
-
-			protected:
-				std::shared_ptr<std::vector<std::shared_ptr<directive::Directive>>> directives_;
+		protected:
+			std::shared_ptr<std::vector<std::shared_ptr<directive::Directive>>> directives_;
 
 		}; // End of class DirectiveTable
 
 	}; // End of namespace DFA
-}; // End of namesapce maestro
+};	   // End of namesapce maestro
 
 #endif

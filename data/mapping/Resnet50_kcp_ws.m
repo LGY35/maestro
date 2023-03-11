@@ -1,4 +1,5 @@
 
+//kcp ： k and c spatial map   整个数据流是weight stationary
 Network Resnet50 {
 	Layer CONV1 {
 		Type: CONV

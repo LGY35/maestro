@@ -25,7 +25,8 @@ Author : Hyoukjun Kwon (hyoukjun@gatech.edu)
 
 namespace maestro {
 	namespace AHW {
-
+		
+		//处理精度，之后扩展比如INT4等 bit精度的
 		enum class Precision {FP8, FP16, FP32, INT8, INT16, INT32};
 
 		class ProcessingElement {

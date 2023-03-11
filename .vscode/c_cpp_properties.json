@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/lugy35/Project/maestro/cost-model/include",
+                "/home/lugy35/Project/maestro/cost-model/include/abstract-hardware-model",
+                "/home/lugy35/Project/maestro/cost-model/include/base",
+                "/home/lugy35/Project/maestro/cost-model/include/cost-analysis",
+                "/home/lugy35/Project/maestro/cost-model/include/dataflow-analysis",
+                "/home/lugy35/Project/maestro/cost-model/include/dataflow-specification-language",
+                "/home/lugy35/Project/maestro/cost-model/include/design-space-exploration",
+                "/home/lugy35/Project/maestro/cost-model/include/tools",
+                "/home/lugy35/Project/maestro/cost-model/include/user-api",
+                "/usr/lib/x86_64-linux-gnu/openmpi/include"
+                
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

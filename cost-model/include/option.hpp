@@ -36,15 +36,15 @@ namespace maestro {
   class Options {
     public:
       /* Default values : Models MAERI with VGG16 and 64 multiplier switches*/
-      int np = 7;
-      int bw = INT_MAX;
-      int hops = 1;
+      int np = 7;                           // number of PEs
+      int bw = INT_MAX;                     
+      int hops = 1;                         //the average number of NoC hops
       int hop_latency = 0;
-      bool mc = true;
-      bool top_bw_only = false;
-      bool bw_sweep = false;
+      bool mc = true;                       //the multicasting capability of NoC
+      bool top_bw_only = false;             //Only constraint top bandwidth             ？？？
+      bool bw_sweep = false;                //Sweep the NoC bandwidth                   ？？？
 
-      bool full_buffer = false;
+      bool full_buffer = false;             //Use a large buffer to host all the data points
       std::list<std::string> in_tensors = {"weight", "input"};
       std::list<std::string> out_tensors = {"output"};
 
@@ -53,14 +53,14 @@ namespace maestro {
       std::string dfsl_file_name = "";
       std::string hw_file_name = "";
 
-
-      int num_simd_lanes = 1;
-      bool do_reduction = true;
-      bool do_implicit_reduction = true;
-      bool fg_sync = false;
+                                            //   ？？？？？？最后一个
+      int num_simd_lanes = 1;               //the number of ALUs in each PE 
+      bool do_reduction = true;             //"If the problem requires reduction or not"
+      bool do_implicit_reduction = true;    //If PEs reduce items as soon as they generate partial results; if set as true, reductions do not require additional cycles.立即做归约运算
+      bool fg_sync = false;                 //"Fine-grained synchronization is performed (future work)" 
 
       bool do_dse = true;
-      bool do_print_ds = false;
+      bool do_print_ds = false;                    //Print out entire design space into a file
       int l1_size = INT_MAX;
       int l2_size = INT_MAX;
       int min_num_pes = 1024;
@@ -69,26 +69,29 @@ namespace maestro {
       int max_noc_bw = 512;
       double area_cap = 1000000.0; // unit: um^2
       double power_cap = 10000.0; // unit: mW
-      std::string optimization_target = "runtime";
-      bool verbose = false;
-      bool print_design_space_to_file = false;
+      std::string optimization_target = "runtime";//Optimization target (available options: runtime, energy, performance/energy)
+      bool verbose = false;                       //Printout intermediate results
+      bool print_design_space_to_file = false;    //Print out the valid design space into an output file
       bool print_res_to_screen = true;
       bool print_res_to_csv_file = true;
       bool print_log_file = false;
       int message_print_lv = 0;
-      int pe_tick = 4;
-      int bw_tick = 4;
-      //felix
+      int pe_tick = 4;                            //The granularity of num PE search
+      int bw_tick = 4;                            //The granularity of bw search
+      //felix 
       int offchip_bw = 70000;
 
 
       bool parse(int argc, char** argv)
       {
           std::vector<std::string> config_fnames;
-
+          
+          //构造  选项描述器 ，参数为该描述器的名字，比如此描述器为General Options
           po::options_description desc("General Options");
-          desc.add_options()
+          desc.add_options()    //为选项描述器增加选项，其参数依次为: key, value的类型，该选项的描述，参数输入时，如：--help
               ("help", "Display help message")
+              //value<type>(ptr) : ptr为该选项对应的外部变量的地址, 当该选项被解析后, 
+                                    //可通过下面的notify()函数将选项的值赋给该外部变量,该变量的值会自动更新
               ("print_res", po::value<bool>(&print_res_to_screen) ,"Print the eval results to screen")
               ("print_res_csv_file", po::value<bool>(&print_res_to_csv_file) ,"Print the eval results to screen")
               ("print_log_file", po::value<bool>(&print_log_file) ,"Print detailed logs to a file")
@@ -148,6 +151,7 @@ namespace maestro {
             ("optimization_target", po::value<std::string>(&optimization_target), "Optimization target (available options: runtime, energy, performance/energy)")
           ;
 
+          //============================总的选项描述器============================
           po::options_description all_options;
           all_options.add(desc);
           all_options.add(io);
@@ -156,10 +160,18 @@ namespace maestro {
           all_options.add(problem);
           all_options.add(dse);
 
+          //选项存储器，,继承自map容器
           po::variables_map vm;
+
+          //对命令行输入的参数做解析,而后将其存入选项存储器
+          //parse_command_line()对输入的选项做解析
+          //store()将解析后的结果存入选项存储器
           po::store(po::parse_command_line(argc, argv, all_options), vm);
+
+          //参数解析完成后，通知variables_map去更新所有的外部变量
           po::notify(vm);
 
+          //此处总是返回true        // /如果输入了未定义的选项，程序会抛出异常，所以对解析代码parse_command_line要用try-catch块包围，如果异常就返回0
           return true;
       }
   }; //End of class Options

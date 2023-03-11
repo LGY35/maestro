@@ -47,14 +47,16 @@ namespace maestro {
 				long GetOutStandingDelay(long data_amount) {
 					long delay;
 
-					long num_sends;
+					long num_sends;//NOC 发送的次数
+
 					if(data_amount % bandwidth_ != 0) {
 						num_sends = data_amount / bandwidth_ + 1;
 					}
 					else {
 						num_sends = data_amount / bandwidth_;
 					}
-
+					
+					//流水线第0步所需要的加载延迟 = 平均跳数 * 每跳的延迟
 					long avg_zero_load_delay = num_average_hops_ * latency_per_hops_;
 
 					delay = avg_zero_load_delay // Head delay

@@ -31,9 +31,9 @@ namespace maestro {
   namespace DFSL {
 
     /* Common tokens */
-    const std::string brace_open_ = "{";
+    const std::string brace_open_ = "{";             //brace 大括号
     const std::string brace_close_ = "}";
-    const std::string bracket_open_ = "[";
+    const std::string bracket_open_ = "[";           // bracket 括号
     const std::string bracket_close_ = "]";
 
     const std::string separator_ = ";";
@@ -111,7 +111,7 @@ namespace maestro {
       const std::string dist_noc_type_bus_ = "Bus";
       const std::string dist_noc_type_tree_ = "Tree";
       const std::string dist_noc_type_crossbar_ = "Crossbar";
-      const std::string dist_noc_type_systolic_ = "Systolic";
+      const std::string dist_noc_type_systolic_ = "Systolic";    //可以脉动阵列。如何实现的呢？
       const std::string dist_noc_type_mesh_ = "Mesh";
 
     const std::string redc_noc_decl_ = "ReductionNoC";
@@ -150,7 +150,17 @@ namespace maestro {
     const std::string buffer_type_circular_fifo_ = "CFIFO";
     const std::string buffer_type_scratchpad_ = "ScratchPad";
     const std::string buffer_type_buffet_ = "Buffet";
+/*       Buffet
+Specifically, Buffet memory is a technique that aims to reduce the amount of data movement between the memory 
+and the processing units in DNN accelerators. 
+It does this by partitioning the memory into multiple banks, 
+where each bank is associated with a subset of the neural network weights.
+During the computation of a neural network layer, 
+only the banks that contain the weights needed for that layer are activated,
+while the other banks remain idle.
+This reduces the amount of data movement and improves the efficiency of the accelerator.
 
+*/
   };
 
 }

@@ -40,14 +40,16 @@ namespace maestro {
          */
         class iterator {
           private:
-            std::shared_ptr<std::vector<std::shared_ptr<DFA::Tensor>>> iter_tensors_;
+            std::shared_ptr<std::vector<std::shared_ptr<DFA::Tensor>>> iter_tensors_;     //指向tensor table的智能指针
           public:
 
             int curr_idx_;
 
-            iterator(std::shared_ptr<std::vector<std::shared_ptr<DFA::Tensor>>> ptr, int idx) :
+            iterator(std::shared_ptr<std::vector<std::shared_ptr<DFA::Tensor>>> ptr, int idx) :  //由ptr 索引是哪个tensor table，由idx索引具体是哪个tensor
               iter_tensors_(ptr), curr_idx_(idx) {
             }
+
+            //针对自定义数据结构  iterator  重载运算符 ++ * == !=
 
             iterator operator++() {
               this->curr_idx_++;
@@ -82,10 +84,10 @@ namespace maestro {
 
 
         TensorTable() {
-          tensors_ = std::make_shared<std::vector<std::shared_ptr<DFA::Tensor>>>();
+          tensors_ = std::make_shared<std::vector<std::shared_ptr<DFA::Tensor>>>();   //就是一个tensor table
         }
 
-        std::shared_ptr<DFA::Tensor> at (int idx) {
+        std::shared_ptr<DFA::Tensor> at (int idx) {                                   //重载at 操作符，索引table中的某一个tensor
           if(idx < tensors_->size()) {
             return tensors_->at(idx);
           }
@@ -98,6 +100,7 @@ namespace maestro {
           return this->at(idx);
         }
 
+      //下面为向tensor table中增加tensor的两种方式
         void AddTensor(std::shared_ptr<DFA::Tensor> new_tensor) {
           tensors_->push_back(new_tensor);
         }
@@ -126,7 +129,8 @@ namespace maestro {
 
           return ret;
         }
-
+        
+        //查找tensor table中某一类的tensor中的所有变量
         std::shared_ptr<std::list<std::string>> GetTensorVarsInClass(DFA::TensorClass tensor_class) {
           std::shared_ptr<std::list<std::string>> ret = std::make_shared<std::list<std::string>>();
 
@@ -140,11 +144,11 @@ namespace maestro {
           }
 
           ret->sort();
-          ret->unique();
+          ret->unique();    //移除重复元素
 
           return ret;
         }
-
+        //查找tensor table中某一类的tensor
         std::shared_ptr<std::list<std::shared_ptr<DFA::Tensor>>> GetTensorsInClass(DFA::TensorClass tensor_class) {
           std::shared_ptr<std::list<std::shared_ptr<DFA::Tensor>>> ret = std::make_shared<std::list<std::shared_ptr<DFA::Tensor>>>();
 

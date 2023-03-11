@@ -154,11 +154,13 @@ namespace maestro {
 
           long num_total_cases = 0;
           int case_id = 0;
+          //代表时间步/状态
           for(auto& iteration_case : *all_iteration_cases) {
             if(case_id == 0) {
               UpdateBufferSizeReq(results, dimensions, reuse_analysis, iteration_case, cluster_idx, num_cluster_lvs, do_double_buffering);
             }
 
+            //状态的发生次数
             long num_case_occurrences = iteration_case->GetNumOccurrences();
             assert(num_case_occurrences > 0);
 

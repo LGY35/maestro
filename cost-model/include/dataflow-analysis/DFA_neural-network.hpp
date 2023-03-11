@@ -37,7 +37,7 @@ namespace maestro{
 
     		class iterator {
     			private:
-    				std::shared_ptr<std::vector<std::shared_ptr<Layer>>> iter_layers_;
+    				std::shared_ptr<std::vector<std::shared_ptr<Layer>>> iter_layers_;				//与tensor table 结构类似
     			public:
 
     				int curr_idx_;

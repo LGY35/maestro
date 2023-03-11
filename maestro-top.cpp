@@ -21,7 +21,7 @@ Author : Hyoukjun Kwon (hyoukjun@gatech.edu)
 
 
 #include <iostream>
-#include <memory>
+#include <memory>     //智能指针shared_ptr，weak_ptr，weak_ptr
 #include <vector>
 #include <list>
 
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 {
 
   maestro::Options option;
-  bool success = option.parse(argc, argv);
+  bool success = option.parse(argc, argv);//执行可执行文件时，输入的参数，argv[argc]，其中argv[0]是可执行文件
 
   if(!success) {
     std::cout << "[MAESTRO] Failed to parse program options" << std::endl;
@@ -68,21 +68,21 @@ int main(int argc, char** argv)
   if(option.bw_sweep && option.top_bw_only) {
     int min_bw = option.bw_tick;
 
-    for(int bw = option.min_noc_bw; bw <= option.max_noc_bw; bw += option.bw_tick) {
-      std::shared_ptr<std::vector<bool>> noc_multcast = std::make_shared<std::vector<bool>>();
+    for(int bw = option.min_noc_bw; bw <= option.max_noc_bw; bw += option.bw_tick) {  //The granularity of bw search   bw_tick = 4;  
+      std::shared_ptr<std::vector<bool>> noc_multcast = std::make_shared<std::vector<bool>>();      //make_shared，标准库函数，此函数在动态内存中分配一个对象并初始化它，
       std::shared_ptr<std::vector<int>> noc_latency = std::make_shared<std::vector<int>>();
       std::shared_ptr<std::vector<int>> noc_bw = std::make_shared<std::vector<int>>();
 
-      if(option.top_bw_only) {
-        noc_bw->push_back(bw);
-        noc_bw->push_back(70000);
+      if(option.top_bw_only) {              //只限制最顶层的带宽
+        noc_bw->push_back(bw);    
+        noc_bw->push_back(70000);     
         noc_bw->push_back(70000);
         noc_bw->push_back(70000);
         noc_bw->push_back(70000);
         noc_bw->push_back(70000);
 
-        noc_latency->push_back(option.hop_latency * option.hops);
-        noc_latency->push_back(1);
+        noc_latency->push_back(option.hop_latency * option.hops); 
+        noc_latency->push_back(1);    
         noc_latency->push_back(1);
         noc_latency->push_back(1);
         noc_latency->push_back(1);
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 
     }
   }
-  else {
+  else {                //全部的带宽都限制
     std::shared_ptr<std::vector<bool>> noc_multcast = std::make_shared<std::vector<bool>>();
     std::shared_ptr<std::vector<int>> noc_latency = std::make_shared<std::vector<int>>();
     std::shared_ptr<std::vector<int>> noc_bw = std::make_shared<std::vector<int>>();

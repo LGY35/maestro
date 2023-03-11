@@ -1,4 +1,4 @@
-./maestro \
+../.././maestro \
           --Mapping_file='alexnet_rs_validation.m' \
           --print_res=true \
           --print_res_csv_file=true \
